@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion - VirtuWork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background: #020812; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; position: relative; }
+        .cert-wrap { position: relative; z-index: 1; width: 100%; max-width: 820px; }
+        .certificate-bg { background: linear-gradient(145deg, #0d1a3a 0%, #111827 50%, #0a1228 100%); border: 2.5px solid #c9a227; border-radius: 8px; padding: 2.5rem 3rem; position: relative; overflow: hidden; box-shadow: 0 0 60px rgba(201,162,39,0.15), 0 20px 50px rgba(0,0,0,0.6); }
+        .inner-border { position: absolute; inset: 10px; border: 1px solid rgba(201,162,39,0.12); border-radius: 4px; pointer-events: none; }
+        .badge-icon { position: absolute; top: 1.5rem; left: 1.5rem; color: #f5c842; opacity: 0.9; }
+        .badge-icon svg { width: 3rem; height: 3rem; }
+        .cert-content { text-align: center; }
+        .cert-title { font-family: 'Playfair Display', Georgia, serif; font-size: 2.2rem; font-weight: 900; color: #f5c842; margin-bottom: 0.5rem; letter-spacing: 0.02em; }
+        .divider-line { width: 150px; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,162,39,0.5), transparent); margin: 0 auto 1.25rem; }
+        .cert-body { font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .cert-name { font-family: 'Playfair Display', Georgia, serif; font-size: 2.4rem; font-weight: 700; color: white; display: inline-block; padding: 0 1rem 0.2rem; border-bottom: 2px solid #6366f1; margin-bottom: 0.75rem; }
+        .cert-role { font-family: 'Playfair Display', Georgia, serif; font-size: 1.4rem; font-weight: 600; color: #a5b4fc; margin-bottom: 0.5rem; }
+        .cert-score { font-size: 0.95rem; color: #d1d5db; }
+        .cert-score span { font-weight: 700; color: #818cf8; }
+        .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 2.5rem; }
+        .cert-footer-item { text-align: center; flex: 1; }
+        .cert-footer-name { font-weight: 600; color: white; border-bottom: 1.5px solid #4b5563; padding: 0 1rem 0.1rem; display: inline-block; font-size: 0.9rem; }
+        .cert-footer-sub { font-size: 0.7rem; color: #6b7280; margin-top: 0.3rem; text-transform: uppercase; }
+        .qr-block { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+        .qr-container { width: 75px; height: 75px; background: white; border-radius: 4px; padding: 6px; border: 1.5px solid rgba(201,162,39,0.4); }
+        .qr-label { font-size: 0.6rem; color: #c9a227; text-transform: uppercase; font-weight: 600; }
+        .download-btn { background: #16a34a; color: white; padding: 0.6rem 2rem; border-radius: 6px; text-decoration: none; font-weight: 600; margin-top: 1.5rem; transition: 0.2s; }
+        .download-btn:hover { background: #15803d; }
+    </style>
+</head>
+<body>
+
+    <div class="fixed top-6 right-6 z-50">
+        <a href="javascript:history.back()" class="bg-gray-800/80 text-white px-4 py-2 rounded-xl border border-gray-700 hover:bg-gray-700 transition backdrop-blur-md flex items-center gap-2">
+            <i class="fas fa-arrow-left"></i> BACK
+        </a>
+    </div>
+
+    <div class="cert-wrap">
+        <div class="certificate-bg">
+            <div class="inner-border"></div>
+
+            <div class="badge-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+
+            <div class="cert-content">
+                <h1 class="cert-title">Certificate of Completion</h1>
+                <div class="divider-line"></div>
+
+                <p class="cert-body">This is to certify that</p>
+                <h2 class="cert-name">{{ user.get_full_name|default:user.username }}</h2>
+
+                <p class="cert-body">has successfully completed the job simulation for</p>
+                <h3 class="cert-role">{{ sim.role_title }}</h3>
+
+                <p class="cert-score">with a score of <span>{{ overall_score }}</span> out of 100</p>
+
+                <div class="cert-footer">
+                    <div class="cert-footer-item">
+                        <p class="cert-footer-name">VirtuWork AI Agent</p>
+                        <p class="cert-footer-sub">Official Verification</p>
+                    </div>
+                    <div class="cert-footer-item">
+                        <p class="cert-footer-name">{{ completion_date|date:"F d, Y" }}</p>
+                        <p class="cert-footer-sub">Date of Completion</p>
+                    </div>
+                    <div class="qr-block">
+                        <div class="qr-container">
+                            <div id="qrcode"></div>
+                        </div>
+                        <div class="qr-label">Verify ID: {{ cert_id }}</div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-between text-[9px] text-gray-500 font-mono border-t border-gray-800/50 pt-4">
+                    <p>SYSTEM_ID: {{ cert_id }}</p>
+                    <p>SESSION_PERIOD: {{ start_date|date:"M d, Y" }} — {{ completion_date|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'download_certificate' sim.id %}" class="download-btn">
+        <i class="fas fa-download mr-2"></i> Download Certificate
+    </a>
+
+<script>
+    window.onload = function() {
+        const qrBox = document.getElementById("qrcode");
+        // Using reverse logic for verify link
+        const verifyLink = window.location.origin + "/simulation/verify/{{ sim.id }}/";
+
+        new QRCode(qrBox, {
+            text: verifyLink,
+            width: 128,
+            height: 128,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    }
+</script>
+</body>
+</html>

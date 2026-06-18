@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        @page {
+            size: A4 landscape;
+            margin: 0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Cinzel', Georgia, serif;
+            background-color: #07101f;
+            color: white;
+            width: 297mm;
+            height: 210mm;
+            overflow: hidden;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        .page {
+            width: 297mm;
+            height: 210mm;
+            position: relative;
+            background: linear-gradient(145deg, #060f1d 0%, #0e1a2e 40%, #08121e 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Corner gradient glows */
+        .page::before {
+            content: '';
+            position: absolute;
+            top: -80px; left: -80px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(245,200,66,0.07) 0%, transparent 65%);
+            border-radius: 50%;
+        }
+        .page::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; right: -80px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(139,92,246,0.07) 0%, transparent 65%);
+            border-radius: 50%;
+        }
+
+        /* Grid overlay */
+        .grid-overlay {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(245,200,66,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245,200,66,0.025) 1px, transparent 1px);
+            background-size: 25mm 25mm;
+        }
+
+        /* Certificate box */
+        .cert {
+            position: relative;
+            width: 267mm;
+            height: 185mm;
+            border: 1.5px solid rgba(245,200,66,0.6);
+            padding: 10mm 14mm;
+            text-align: center;
+            background: linear-gradient(160deg, rgba(10,16,35,0.9) 0%, rgba(14,26,52,0.85) 100%);
+        }
+
+        /* Top and bottom shimmer */
+        .cert::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #c9a227 15%, #ffe88a 50%, #c9a227 85%, transparent 100%);
+        }
+        .cert::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #c9a227 15%, #ffe88a 50%, #c9a227 85%, transparent 100%);
+        }
+
+        /* Inner border */
+        .inner-border {
+            position: absolute;
+            inset: 5mm;
+            border: 0.5px solid rgba(245,200,66,0.12);
+        }
+
+        /* Watermark */
+        .watermark {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Cinzel', serif;
+            font-size: 100pt;
+            font-weight: 900;
+            color: rgba(245,200,66,0.025);
+            white-space: nowrap;
+            pointer-events: none;
+            letter-spacing: 10mm;
+        }
+
+        /* Corner ornaments */
+        .corner { position: absolute; width: 16mm; height: 16mm; }
+        .co-tl { top: 6mm; left: 6mm; border-top: 1.5px solid rgba(245,200,66,0.6); border-left: 1.5px solid rgba(245,200,66,0.6); }
+        .co-tr { top: 6mm; right: 6mm; border-top: 1.5px solid rgba(245,200,66,0.6); border-right: 1.5px solid rgba(245,200,66,0.6); }
+        .co-bl { bottom: 6mm; left: 6mm; border-bottom: 1.5px solid rgba(245,200,66,0.6); border-left: 1.5px solid rgba(245,200,66,0.6); }
+        .co-br { bottom: 6mm; right: 6mm; border-bottom: 1.5px solid rgba(245,200,66,0.6); border-right: 1.5px solid rgba(245,200,66,0.6); }
+
+        .corner-dot { position: absolute; width: 3px; height: 3px; background: rgba(245,200,66,0.7); border-radius: 50%; }
+        .co-tl .corner-dot { top: -2px; left: -2px; }
+        .co-tr .corner-dot { top: -2px; right: -2px; }
+        .co-bl .corner-dot { bottom: -2px; left: -2px; }
+        .co-br .corner-dot { bottom: -2px; right: -2px; }
+
+        /* Left / right side accents */
+        .side-accent-l {
+            position: absolute;
+            left: 11mm; top: 50%;
+            transform: translateY(-50%);
+            width: 1px; height: 60mm;
+            background: linear-gradient(180deg, transparent, rgba(245,200,66,0.2), transparent);
+        }
+        .side-accent-r {
+            position: absolute;
+            right: 11mm; top: 50%;
+            transform: translateY(-50%);
+            width: 1px; height: 60mm;
+            background: linear-gradient(180deg, transparent, rgba(245,200,66,0.2), transparent);
+        }
+
+        /* Content */
+        .content { position: relative; z-index: 1; }
+
+        .badge-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8mm;
+            margin-bottom: 3mm;
+        }
+
+        .badge-line {
+            flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(245,200,66,0.25));
+        }
+        .badge-line.r { background: linear-gradient(270deg, transparent, rgba(245,200,66,0.25)); }
+
+        .badge-icon {
+            font-size: 18pt;
+            filter: drop-shadow(0 0 6px rgba(245,200,66,0.5));
+        }
+
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 6pt;
+            letter-spacing: 3mm;
+            text-transform: uppercase;
+            color: rgba(245,200,66,0.45);
+            margin-bottom: 2mm;
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 28pt;
+            font-weight: 900;
+            background: linear-gradient(135deg, #c9a227 0%, #ffe88a 40%, #f5c842 60%, #c9a227 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1mm;
+            line-height: 1.1;
+        }
+
+        .title-line {
+            width: 60mm; height: 1px;
+            background: linear-gradient(90deg, transparent, #f5c842, transparent);
+            margin: 2mm auto 4mm;
+        }
+
+        .subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: 9pt;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 3mm;
+            letter-spacing: 0.5mm;
+        }
+
+        .name {
+            font-family: 'Cinzel', serif;
+            font-size: 22pt;
+            font-weight: 700;
+            color: white;
+            display: inline-block;
+            padding: 0 8mm 2mm;
+            border-bottom: 1px solid rgba(245,200,66,0.5);
+            margin-bottom: 3mm;
+        }
+
+        .text {
+            font-family: 'Cinzel', serif;
+            font-size: 9pt;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 2mm;
+            letter-spacing: 0.4mm;
+        }
+
+        .role {
+            font-family: 'Orbitron', monospace;
+            font-size: 14pt;
+            font-weight: 700;
+            color: #00f5ff;
+            text-shadow: 0 0 10px rgba(0,245,255,0.3);
+            margin-bottom: 3mm;
+            letter-spacing: 0.3mm;
+        }
+
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3mm;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8pt;
+            background: rgba(245,200,66,0.07);
+            border: 0.5px solid rgba(245,200,66,0.2);
+            padding: 1.5mm 5mm;
+            border-radius: 20px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 5mm;
+        }
+
+        .score-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 11pt;
+            font-weight: 700;
+            color: #f5c842;
+        }
+
+        /* Divider */
+        .divider {
+            width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(245,200,66,0.12), transparent);
+            margin: 0 auto 4mm;
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .footer-item { text-align: center; }
+
+        .footer-val {
+            font-family: 'Cinzel', serif;
+            font-size: 8.5pt;
+            font-weight: 700;
+            color: white;
+            padding-bottom: 2mm;
+            border-bottom: 0.5px solid rgba(245,200,66,0.35);
+            margin-bottom: 1.5mm;
+            min-width: 55mm;
+            display: inline-block;
+        }
+
+        .footer-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 5.5pt;
+            letter-spacing: 1mm;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+        }
+
+        .footer-sep {
+            width: 1px; height: 10mm;
+            background: linear-gradient(180deg, transparent, rgba(245,200,66,0.2), transparent);
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="grid-overlay"></div>
+
+    <div class="cert">
+        <!-- Inner border -->
+        <div class="inner-border"></div>
+
+        <!-- Watermark -->
+        <div class="watermark">VW</div>
+
+        <!-- Corner ornaments -->
+        <div class="corner co-tl"><div class="corner-dot"></div></div>
+        <div class="corner co-tr"><div class="corner-dot"></div></div>
+        <div class="corner co-bl"><div class="corner-dot"></div></div>
+        <div class="corner co-br"><div class="corner-dot"></div></div>
+
+        <!-- Side accents -->
+        <div class="side-accent-l"></div>
+        <div class="side-accent-r"></div>
+
+        <!-- Content -->
+        <div class="content">
+
+            <!-- Badge row -->
+            <div class="badge-row">
+                <div class="badge-line"></div>
+                <div class="badge-icon">🏆</div>
+                <div class="badge-line r"></div>
+            </div>
+
+            <div class="eyebrow">VirtuWork · Official Certification</div>
+
+            <h1>Certificate of Completion</h1>
+            <div class="title-line"></div>
+
+            <div class="subtitle">This is to certify that</div>
+
+            <div class="name">{{ user.get_full_name|default:user.username }}</div>
+
+            <div class="text">has successfully completed the job simulation for</div>
+
+            <div class="role">{{ sim.role_title }}</div>
+
+            <div class="score-badge">
+                with a score of &nbsp;<span class="score-num">{{ overall_score }}</span>&nbsp; out of 100
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="footer">
+                <div class="footer-item">
+                    <div class="footer-val">VirtuWork AI Agent</div>
+                    <div class="footer-label">Official Verification</div>
+                </div>
+                <div class="footer-sep"></div>
+                <div class="footer-item">
+                    <div class="footer-val">{{ sim.created_at|date:"F d, Y" }}</div>
+                    <div class="footer-label">Date of Completion</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

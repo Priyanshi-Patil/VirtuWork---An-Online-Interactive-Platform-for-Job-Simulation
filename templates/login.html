@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VirtuWork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --cyan: #00f5ff; --green: #00ff88; --purple: #8b5cf6; --bg: #020812; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Matrix rain canvas */
+        #matrix-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.18;
+        }
+
+        /* Cyan glow on left, purple on right */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%; left: 20%;
+            transform: translate(-50%, -50%);
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,245,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            top: 50%; right: 10%;
+            transform: translateY(-50%);
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(139,92,246,0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .login-wrap {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            padding: 1rem;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--cyan), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.4rem;
+        }
+
+        .brand-sub {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: rgba(255,255,255,0.25);
+        }
+
+        .card {
+            background: rgba(0,245,255,0.02);
+            border: 1px solid rgba(0,245,255,0.12);
+            border-radius: 12px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        }
+
+        /* Corner brackets */
+        .corner { position: absolute; width: 12px; height: 12px; border-color: rgba(0,245,255,0.4); border-style: solid; }
+        .tl { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+        .tr { top: 6px; right: 6px; border-width: 1px 1px 0 0; }
+        .bl { bottom: 6px; left: 6px; border-width: 0 0 1px 1px; }
+        .br { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+        .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .field-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(0,245,255,0.6);
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0,245,255,0.15);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(0,245,255,0.08);
+        }
+        input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .btn-submit {
+            width: 100%;
+            margin-top: 1.75rem;
+            padding: 0.85rem;
+            border-radius: 6px;
+            border: none;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+        .btn-submit:hover { box-shadow: 0 0 30px rgba(99,102,241,0.5); }
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%;
+            width: 40%; height: 200%;
+            background: rgba(255,255,255,0.12);
+            transform: skewX(-20deg);
+            transition: left 0.4s;
+        }
+        .btn-submit:hover::before { left: 130%; }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.3);
+        }
+        .signup-link a { color: var(--cyan); text-decoration: none; }
+        .signup-link a:hover { text-decoration: underline; }
+
+        {% comment %} Django messages {% endcomment %}
+        .msg-error {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #f87171;
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="fixed top-6 right-6 z-50">
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 bg-gray-800/80 text-cyan-400 px-5 py-2 rounded-xl border border-cyan-500/30 hover:bg-cyan-500 hover:text-white transition font-bold shadow-lg backdrop-blur-md">
+            <i class="fas fa-arrow-left"></i> BACK
+        </a>
+    </div>
+    <div class="login-wrap">
+        <div class="brand">
+            <span class="brand-name">VirtuWork</span>
+            <span class="brand-sub">// SECURE_AUTH.exe</span>
+        </div>
+
+        <div class="card">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="card-title">ACCESS TERMINAL</div>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="msg-error">⚠ {{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form action="{% url 'login' %}" method="POST">
+                {% csrf_token %}
+                <div class="field-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" placeholder="you@example.com" required>
+                </div>
+                <div class="field-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-submit">LOGIN →</button>
+            </form>
+
+            <div class="signup-link">
+                No account? <a href="{% url 'signup' %}">Register here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const chars = '01アイウエオカキクケコサシスセソ∑∆Ω';
+        const fontSize = 13;
+        const cols = Math.floor(canvas.width / fontSize);
+        const drops = Array(cols).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(2, 8, 18, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00f5ff';
+            ctx.font = fontSize + 'px JetBrains Mono, monospace';
+            drops.forEach((y, i) => {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillStyle = i % 3 === 0 ? '#8b5cf6' : '#00f5ff';
+                ctx.fillText(char, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+
+        setInterval(drawMatrix, 55);
+    </script>
+</body>
+</html>

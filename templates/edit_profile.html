@@ -1,0 +1,155 @@
+<!-- EDIT_PROFILE.HTML -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile - VirtuWork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --cyan: #00f5ff; --green: #00ff88; --purple: #8b5cf6; --bg: #020812; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding: 2rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0; pointer-events: none;
+        }
+
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0; pointer-events: none; }
+        .orb1 { width: 450px; height: 450px; background: rgba(139,92,246,0.07); top: -100px; right: -80px; }
+        .orb2 { width: 350px; height: 350px; background: rgba(0,245,255,0.05); bottom: -80px; left: -60px; }
+
+        .wrap { position: relative; z-index: 1; width: 100%; max-width: 460px; }
+
+        .brand { text-align: center; margin-bottom: 2rem; }
+        .brand-name {
+            font-family: 'Orbitron', monospace; font-size: 1.6rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .brand-sub { font-size: 0.65rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.2); margin-top: 0.3rem; }
+
+        .card {
+            background: rgba(139,92,246,0.03);
+            border: 1px solid rgba(139,92,246,0.15);
+            border-radius: 12px; padding: 2.5rem; position: relative; overflow: hidden;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+        }
+
+        .corner { position: absolute; width: 12px; height: 12px; border-color: rgba(139,92,246,0.4); border-style: solid; }
+        .tl { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+        .tr { top: 6px; right: 6px; border-width: 1px 1px 0 0; }
+        .bl { bottom: 6px; left: 6px; border-width: 0 0 1px 1px; }
+        .br { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+        .card-title { font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700; color: white; text-align: center; margin-bottom: 2rem; }
+
+        .field-group { margin-bottom: 1.25rem; }
+        label { display: block; font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(139,92,246,0.7); margin-bottom: 0.5rem; }
+
+        input[type="text"] {
+            width: 100%; padding: 0.75rem 1rem;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(139,92,246,0.15);
+            border-radius: 6px; color: white;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,92,246,0.08); }
+        input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .btn-row { display: flex; gap: 0.75rem; margin-top: 1.75rem; }
+
+        .btn-save {
+            flex: 1; padding: 0.85rem; border-radius: 6px; border: none; cursor: pointer;
+            background: linear-gradient(135deg, var(--purple), #6366f1);
+            font-family: 'Orbitron', monospace; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+            color: white; transition: box-shadow 0.3s;
+        }
+        .btn-save:hover { box-shadow: 0 0 25px rgba(139,92,246,0.5); }
+
+        .btn-cancel {
+            flex: 1; padding: 0.85rem; border-radius: 6px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            color: rgba(255,255,255,0.4); text-decoration: none;
+            text-align: center; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-cancel:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); }
+    </style>
+</head>
+<body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="fixed top-6 right-6 z-50">
+        <a href="javascript:history.back()" class="bg-gray-800/80 text-white px-5 py-2 rounded-xl border border-gray-700 hover:bg-gray-700 transition backdrop-blur-md flex items-center gap-2 font-bold text-xs">
+            <i class="fas fa-arrow-left"></i> ESC_UPDATE
+        </a>
+    </div>
+    <div class="wrap">
+        <div class="brand">
+            <div class="brand-name">VirtuWork</div>
+            <div class="brand-sub">// UPDATE_PROFILE.exe</div>
+        </div>
+
+        <div class="card">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="card-title">EDIT USER DATA</div>
+
+            <form action="{% url 'edit_profile' %}" method="POST">
+                {% csrf_token %}
+                
+                <div class="field-group">
+                    <label>First Name</label>
+                    <input type="text" name="first_name" value="{{ user.first_name }}" placeholder="Your first name">
+                </div>
+                
+                <div class="field-group">
+                    <label>Last Name</label>
+                    <input type="text" name="last_name" value="{{ user.last_name }}" placeholder="Your last name">
+                </div>
+
+                <div class="field-group">
+                    <label>Degree (e.g. B.Tech 4th Year)</label>
+                    <input type="text" name="degree" value="{{ profile.degree }}" placeholder="e.g. BCA 3rd Year">
+                </div>
+
+                <div class="field-group">
+                    <label>Major (e.g. AI / Computer Science)</label>
+                    <input type="text" name="major" value="{{ profile.major }}" placeholder="e.g. Software Engineering">
+                </div>
+                <div class="field-group">
+                    <label>Email Address</label>
+                    <input type="text" name="email" value="{{ user.email }}" readonly> 
+                </div>
+
+                <div class="btn-row">
+                    <button type="submit" class="btn-save">SAVE CHANGES</button>
+                    <a href="{% url 'profile' %}" class="btn-cancel">// Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

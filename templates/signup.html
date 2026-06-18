@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - VirtuWork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --cyan: #00f5ff; --green: #00ff88; --purple: #8b5cf6; --bg: #020812; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 2rem 1rem;
+        }
+
+        #matrix-canvas { position: fixed; inset: 0; z-index: 0; opacity: 0.15; }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 30%; right: 15%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,255,136,0.06) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .signup-wrap { position: relative; z-index: 1; width: 100%; max-width: 460px; padding: 1rem; }
+
+        .brand { text-align: center; margin-bottom: 2rem; }
+        .brand-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem; font-weight: 900;
+            background: linear-gradient(135deg, var(--green), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            display: block; margin-bottom: 0.4rem;
+        }
+        .brand-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.25); }
+
+        .card {
+            background: rgba(0,255,136,0.02);
+            border: 1px solid rgba(0,255,136,0.1);
+            border-radius: 12px;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+        }
+
+        .corner { position: absolute; width: 12px; height: 12px; border-color: rgba(0,255,136,0.4); border-style: solid; }
+        .tl { top: 6px; left: 6px; border-width: 1px 0 0 1px; }
+        .tr { top: 6px; right: 6px; border-width: 1px 1px 0 0; }
+        .bl { bottom: 6px; left: 6px; border-width: 0 0 1px 1px; }
+        .br { bottom: 6px; right: 6px; border-width: 0 1px 1px 0; }
+
+        .card-title { font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700; color: white; text-align: center; margin-bottom: 2rem; }
+
+        .field-group { margin-bottom: 1.1rem; }
+        label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(0,255,136,0.6); margin-bottom: 0.5rem; }
+
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0,255,136,0.12);
+            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,255,136,0.06); }
+        input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .hint { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; margin-top: 0.35rem; display: block; }
+        .hint.ok { color: var(--green); }
+        .hint.err { color: #f87171; }
+
+        /* Password rules checklist */
+        .password-rules {
+            margin-top: 0.6rem;
+            padding: 0.75rem 1rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0,255,136,0.08);
+            border-radius: 6px;
+            display: none;
+        }
+        .password-rules.visible { display: block; }
+        .rule {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+        .rule:last-child { margin-bottom: 0; }
+        .rule.pass { color: var(--green); }
+        .rule.fail { color: #f87171; }
+        .rule-icon { font-size: 0.8rem; }
+
+        .error-banner {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            color: #f87171;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+
+        .btn-submit {
+            width: 100%; margin-top: 1.5rem; padding: 0.85rem; border-radius: 6px; border: none;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            color: #020812;
+            font-family: 'Orbitron', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em;
+            cursor: pointer; position: relative; overflow: hidden; transition: box-shadow 0.3s;
+        }
+        .btn-submit:hover { box-shadow: 0 0 30px rgba(0,255,136,0.4); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+        .btn-submit::before {
+            content: ''; position: absolute;
+            top: -50%; left: -60%; width: 40%; height: 200%;
+            background: rgba(255,255,255,0.15); transform: skewX(-20deg); transition: left 0.4s;
+        }
+        .btn-submit:hover::before { left: 130%; }
+
+        .login-link { text-align: center; margin-top: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+        .login-link a { color: var(--green); text-decoration: none; }
+        .login-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="fixed top-6 right-6 z-50">
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 bg-gray-800/80 text-cyan-400 px-5 py-2 rounded-xl border border-cyan-500/30 hover:bg-cyan-500 hover:text-white transition font-bold shadow-lg backdrop-blur-md">
+            <i class="fas fa-arrow-left"></i> BACK
+        </a>
+    </div>
+    <div class="signup-wrap">
+        <div class="brand">
+            <span class="brand-name">VirtuWork</span>
+            <span class="brand-sub">// CREATE_ACCOUNT.exe</span>
+        </div>
+
+        <div class="card">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+
+            <div class="card-title">REGISTER USER</div>
+
+            {% if error %}
+            <div class="error-banner">✖ {{ error }}</div>
+            {% endif %}
+
+            <form action="{% url 'signup' %}" method="POST" id="signupForm">
+                {% csrf_token %}
+
+                <div class="field-group">
+                    <label>Full Name</label>
+                    <input type="text" name="fullname" placeholder="Your full name" required>
+                </div>
+
+                <div class="field-group">
+                    <label>Username</label>
+                    <input type="text" name="username" placeholder="Choose a username" required>
+                </div>
+
+                <div class="field-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                    <span id="emailHint" class="hint"></span>
+                </div>
+
+                <div class="field-group">
+                    <label>Password</label>
+                    <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    <!-- Live password rules -->
+                    <div class="password-rules" id="passwordRules">
+                        <div class="rule" id="rule-length">
+                            <span class="rule-icon">○</span> At least 8 characters
+                        </div>
+                        <div class="rule" id="rule-letter">
+                            <span class="rule-icon">○</span> At least one letter (A-Z)
+                        </div>
+                        <div class="rule" id="rule-number">
+                            <span class="rule-icon">○</span> At least one number (0-9)
+                        </div>
+                        <div class="rule" id="rule-special">
+                            <span class="rule-icon">○</span> At least one special character (@ or #)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                    <span id="confirmHint" class="hint"></span>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-submit">CREATE ACCOUNT →</button>
+            </form>
+
+            <div class="login-link">Already have an account? <a href="{% url 'login' %}">Login here</a></div>
+        </div>
+    </div>
+
+    <script>
+        // ── Matrix rain ──────────────────────────────────────────────────────
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const chars = '01アイウエオ∑∆Ω#@!';
+        const fontSize = 13;
+        const cols = Math.floor(canvas.width / fontSize);
+        const drops = Array(cols).fill(1);
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(2, 8, 18, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drops.forEach((y, i) => {
+                const char = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillStyle = i % 4 === 0 ? '#8b5cf6' : '#00ff88';
+                ctx.font = fontSize + 'px monospace';
+                ctx.fillText(char, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(drawMatrix, 55);
+
+        // ── Email availability check ─────────────────────────────────────────
+        document.getElementById('email').addEventListener('input', async function () {
+            const email = this.value;
+            const hint = document.getElementById('emailHint');
+            if (email.includes('@') && email.includes('.')) {
+                const res = await fetch(`/api/check-email/?email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+                hint.innerText = data.exists ? '✖ Email already registered' : '✔ Email available';
+                hint.className = data.exists ? 'hint err' : 'hint ok';
+            } else {
+                hint.innerText = '';
+            }
+        });
+
+        // ── Live password rule validation ────────────────────────────────────
+        const passwordInput = document.getElementById('password');
+        const rulesBox = document.getElementById('passwordRules');
+
+        function setRule(id, passing) {
+            const el = document.getElementById(id);
+            el.className = 'rule ' + (passing ? 'pass' : 'fail');
+            el.querySelector('.rule-icon').innerText = passing ? '✔' : '✖';
+        }
+
+        function checkPassword(val) {
+            const hasLength  = val.length >= 8;
+            const hasLetter  = /[A-Za-z]/.test(val);
+            const hasNumber  = /[0-9]/.test(val);
+            const hasSpecial = /[@#]/.test(val);
+
+            setRule('rule-length',  hasLength);
+            setRule('rule-letter',  hasLetter);
+            setRule('rule-number',  hasNumber);
+            setRule('rule-special', hasSpecial);
+
+            return hasLength && hasLetter && hasNumber && hasSpecial;
+        }
+
+        passwordInput.addEventListener('focus', () => {
+            rulesBox.classList.add('visible');
+        });
+
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            if (val.length > 0) {
+                rulesBox.classList.add('visible');
+                checkPassword(val);
+            } else {
+                rulesBox.classList.remove('visible');
+            }
+            // Also re-check confirm match
+            checkConfirm();
+        });
+
+        // ── Confirm password match ───────────────────────────────────────────
+        const confirmInput = document.getElementById('confirm_password');
+        const confirmHint  = document.getElementById('confirmHint');
+
+        function checkConfirm() {
+            const val = confirmInput.value;
+            if (!val) { confirmHint.innerText = ''; return; }
+            if (val === passwordInput.value) {
+                confirmHint.innerText = '✔ Passwords match';
+                confirmHint.className = 'hint ok';
+            } else {
+                confirmHint.innerText = '✖ Passwords do not match';
+                confirmHint.className = 'hint err';
+            }
+        }
+
+        confirmInput.addEventListener('input', checkConfirm);
+
+        // ── Block submit if validation fails ─────────────────────────────────
+        document.getElementById('signupForm').addEventListener('submit', function (e) {
+            const passVal = passwordInput.value;
+            const passOk  = checkPassword(passVal);
+            const matchOk = confirmInput.value === passVal;
+
+            if (!passOk) {
+                e.preventDefault();
+                rulesBox.classList.add('visible');
+                return;
+            }
+            if (!matchOk) {
+                e.preventDefault();
+                confirmHint.innerText = '✖ Passwords do not match';
+                confirmHint.className = 'hint err';
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

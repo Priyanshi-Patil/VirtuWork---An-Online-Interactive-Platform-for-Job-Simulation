@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile - VirtuWork</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --cyan: #00f5ff; --green: #00ff88; --purple: #8b5cf6; --bg: #030d1a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Rajdhani', sans-serif; background: var(--bg); color: #e2e8f0; min-height: 100vh; }
+        body::before { content: ''; position: fixed; inset: 0; background-image: repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(0,245,255,0.012) 40px, rgba(0,245,255,0.012) 41px); z-index: 0; pointer-events: none; }
+        .orb { position: fixed; border-radius: 50%; filter: blur(100px); z-index: 0; pointer-events: none; }
+        .orb1 { width: 500px; height: 500px; background: rgba(0,245,255,0.05); top: -100px; right: -100px; }
+        .orb2 { width: 400px; height: 400px; background: rgba(139,92,246,0.06); bottom: 10%; left: -80px; }
+        header { position: sticky; top: 0; z-index: 50; background: rgba(3,13,26,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,245,255,0.08); padding: 1rem 2rem; }
+        .header-inner { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; background: linear-gradient(135deg, var(--cyan), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hdr-btns { display: flex; gap: 0.75rem; }
+        .hdr-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; padding: 0.5rem 1.1rem; border-radius: 5px; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+        .hdr-btn-outline { background: transparent; border: 1px solid rgba(0,245,255,0.2); color: rgba(0,245,255,0.7); }
+        .hdr-btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
+        .hdr-btn-solid { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; }
+        .hdr-btn-solid:hover { box-shadow: 0 0 20px rgba(99,102,241,0.4); }
+        main { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 2.5rem 2rem; }
+        .user-card { background: rgba(0,245,255,0.02); border: 1px solid rgba(0,245,255,0.1); border-radius: 12px; padding: 2rem; display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+        .user-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent); }
+        .avatar-wrap { position: relative; flex-shrink: 0; }
+        .avatar-img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid rgba(0,245,255,0.3); background: rgba(99,102,241,0.2); display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 900; color: var(--cyan); overflow: hidden; }
+        .avatar-img img { width: 100%; height: 100%; object-fit: cover; }
+        .cam-btn { position: absolute; bottom: 2px; right: 2px; width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: 2px solid var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.65rem; color: white; }
+        .user-info-name { font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 900; color: white; margin-bottom: 0.35rem; }
+        .user-info-role { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--cyan); margin-bottom: 0.5rem; }
+        .user-info-email { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+        .user-info-email i { margin-right: 6px; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
+        @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
+        .sec-title { font-family: 'Orbitron', monospace; font-size: 0.9rem; font-weight: 700; color: white; display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+        .sec-title i { color: var(--cyan); font-size: 0.8rem; }
+        .sim-item { background: rgba(0,0,0,0.3); border: 1px solid rgba(0,245,255,0.08); border-radius: 8px; padding: 1.1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; transition: border-color 0.2s; }
+        .sim-item:hover { border-color: rgba(0,245,255,0.2); }
+        .sim-item-title { font-family: 'Orbitron', monospace; font-size: 0.82rem; color: white; margin-bottom: 0.2rem; }
+        .sim-item-date { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: rgba(255,255,255,0.3); }
+        .resume-btn { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; padding: 0.35rem 0.85rem; border-radius: 4px; text-decoration: none; background: rgba(99,102,241,0.1); color: #818cf8; border: 1px solid rgba(99,102,241,0.2); transition: all 0.2s; }
+        .resume-btn:hover { background: #6366f1; color: white; }
+        .cert-card { background: rgba(0,0,0,0.3); border-left: 3px solid var(--purple); border-top: 1px solid rgba(0,245,255,0.06); border-right: 1px solid rgba(0,245,255,0.06); border-bottom: 1px solid rgba(0,245,255,0.06); border-radius: 0 8px 8px 0; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+        .cert-title { font-family: 'Orbitron', monospace; font-size: 0.8rem; color: white; margin-bottom: 0.2rem; }
+        .cert-score { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--green); }
+        .cert-view { color: var(--cyan); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+        .cert-view:hover { color: white; }
+        .right-panel { background: rgba(0,245,255,0.02); border: 1px solid rgba(0,245,255,0.1); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; position: relative; overflow: hidden; }
+        .right-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+        .tag { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.05em; padding: 0.3rem 0.75rem; border-radius: 20px; border: 1px solid rgba(0,245,255,0.15); color: rgba(255,255,255,0.5); background: rgba(0,245,255,0.04); display: inline-block; margin: 0.2rem; }
+        .empty-box { border: 1px dashed rgba(0,245,255,0.1); border-radius: 8px; padding: 2rem; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <header>
+        <div class="header-inner">
+            <div class="logo">VirtuWork</div>
+            <div class="hdr-btns">
+                <a href="{% url 'edit_profile' %}" class="hdr-btn hdr-btn-outline">Edit Profile</a>
+                <a href="{% url 'dashboard' %}" class="hdr-btn hdr-btn-solid">Dashboard</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="user-card">
+            <div class="avatar-wrap">
+                <div class="avatar-img">
+                    {% if profile.profile_photo %}
+                        <img src="{{ profile.profile_photo.url }}" alt="avatar">
+                    {% else %}
+                        {{ user.username|first|upper }}
+                    {% endif %}
+                </div>
+                <form id="photo-form" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label for="photo-upload" class="cam-btn">
+                        <i class="fas fa-camera"></i>
+                        <input type="file" id="photo-upload" name="profile_photo" class="hidden" onchange="document.getElementById('photo-form').submit();">
+                    </label>
+                </form>
+            </div>
+            <div>
+                <div class="user-info-name">{{ user.get_full_name|default:user.username }}</div>
+                <div class="user-info-role">// {{ profile.degree|default:"Student" }} | {{ profile.major|default:"General Tech" }}</div>
+                <div class="user-info-email"><i class="fas fa-envelope"></i> {{ user.email }}</div>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <div class="space-y-8">
+                <section>
+                    <div class="sec-title"><i class="fas fa-spinner fa-spin"></i> Active Simulations</div>
+                    <div class="space-y-3">
+                        {% for sim in active_simulations %} 
+                        <div class="sim-item">
+                            <div>
+                                <div class="sim-item-title">{{ sim.role_title }}</div>
+                                <div class="sim-item-date">Started {{ sim.created_at|date:"M d, Y" }}</div>
+                            </div>
+                            <a href="{% url 'simulation_chat' sim.id %}" class="resume-btn">Resume</a>
+                        </div>
+                        {% empty %}
+                        <div class="empty-box">// No active simulations found</div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section>
+                    <div class="sec-title"><i class="fas fa-award" style="color: #fbbf24;"></i> My Certificates</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {% for cert in certificates %}
+                        <div class="cert-card">
+                            <div>
+                                <div class="cert-title">{{ cert.role_title }}</div>
+                                <div class="cert-score">Score: {{ cert.display_score }}%</div>
+                            </div>
+                            <a href="{% url 'certificate' cert.id %}" class="cert-view"><i class="fas fa-eye"></i></a>
+                        </div>
+                        {% empty %}
+                        <div class="empty-box col-span-2">// No certificates earned yet</div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-panel h-full flex flex-col justify-center">
+                <h3 class="font-orbitron text-[10px] text-indigo-400 mb-6 uppercase tracking-[0.2em] text-center">// READINESS_INDEX</h3>
+                <div class="relative h-[450px] w-full">
+                    <canvas id="spiderChart"></canvas>
+                </div>
+                </div>
+        </div>
+    </main>
+    <script>
+        const ctx = document.getElementById('spiderChart').getContext('2d');
+        const chartData = {
+            labels: ['Technical', 'Communication', 'Logic', 'Adaptability', 'Code Quality'],
+            datasets: [{
+                label: 'Skills Profile',
+                data: [{{ profile.tech_score|default:72 }}, {{ profile.comm_score|default:85 }}, 80, 65, 78],
+                fill: true,
+                backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                borderColor: '#00f5ff',
+                pointBackgroundColor: '#00f5ff',
+                pointBorderColor: '#fff',
+                pointHoverRadius: 6,
+                borderWidth: 2
+            }]
+        };
+
+        new Chart(ctx, {
+            type: 'radar',
+            data: chartData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        angleLines: { color: 'rgba(255, 255, 255, 0.05)' },
+                        pointLabels: { color: '#9ca3af', font: { size: 9, family: 'JetBrains Mono' } },
+                        ticks: { display: false },
+                        suggestedMin: 0, suggestedMax: 100
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        displayColors: false,
+                        backgroundColor: 'rgba(3, 13, 26, 0.9)',
+                        titleFont: { family: 'Orbitron', size: 12 },
+                        bodyFont: { family: 'Rajdhani', size: 13 },
+                        borderWidth: 1,
+                        borderColor: 'rgba(0, 245, 255, 0.2)',
+                        callbacks: {
+                            label: function(item) {
+                                const val = item.raw;
+                                let msg = "Level: Intermediate";
+                                if(val >= 85) msg = "Level: Expert (Industry Ready)";
+                                else if(val >= 70) msg = "Level: Advanced";
+                                return [`Score: ${val}%`, msg];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

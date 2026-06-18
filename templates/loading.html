@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initializing Simulation - VirtuWork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: #020812;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPan 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes gridPan {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 60px; }
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+            animation: orbFloat 8s ease-in-out infinite;
+        }
+        .orb1 { width: 500px; height: 500px; background: rgba(0,245,255,0.06); top: -150px; left: -100px; }
+        .orb2 { width: 400px; height: 400px; background: rgba(139,92,246,0.08); bottom: -100px; right: -80px; animation-delay: -4s; }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .loader-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .orbit-track {
+            position: absolute;
+            inset: 0;
+            border: 4px solid rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+        }
+
+        .orbit-wrapper {
+            position: absolute;
+            inset: 0;
+            animation: rotate-orbit 2s linear infinite;
+        }
+
+        .ai-node {
+            position: absolute;
+            top: -6px;
+            left: calc(50% - 8px);
+            width: 16px;
+            height: 16px;
+            background: #a855f7;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #a855f7, 0 0 30px rgba(168, 85, 247, 0.4);
+        }
+
+        @keyframes rotate-orbit {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.35);
+            transition: all 0.4s ease;
+            border: 1px solid transparent;
+        }
+        .step.active {
+            color: #a78bfa;
+            background: rgba(139,92,246,0.08);
+            border-color: rgba(139,92,246,0.2);
+        }
+        .step.done {
+            color: #34d399;
+            background: rgba(52,211,153,0.06);
+            border-color: rgba(52,211,153,0.2);
+        }
+        .step .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            flex-shrink: 0;
+        }
+        .step.active .dot { animation: blink 1s step-end infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+    </style>
+</head>
+<body class="text-white min-h-screen flex items-center justify-center overflow-hidden">
+
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+
+    <div class="text-center z-10 px-4 w-full max-w-sm" style="position:relative; z-index:10;">
+
+        <div class="flex justify-center mb-8">
+            <div class="loader-container">
+                <div class="orbit-track"></div>
+                <div class="orbit-wrapper"><div class="ai-node"></div></div>
+            </div>
+        </div>
+
+        <h1 class="text-3xl md:text-4xl font-bold mb-2 gradient-text">Building Your Simulation</h1>
+        <p class="text-gray-500 text-sm mb-8">This takes about 15–30 seconds</p>
+
+        <!-- Step indicators -->
+        <div class="space-y-3 text-left mb-8">
+            <div class="step active" id="step1">
+                <div class="dot"></div><span>Designing project scope...</span>
+            </div>
+            <div class="step" id="step2">
+                <div class="dot"></div><span>Creating task milestones...</span>
+            </div>
+            <div class="step" id="step3">
+                <div class="dot"></div><span>Setting up your team...</span>
+            </div>
+            <div class="step" id="step4">
+                <div class="dot"></div><span>Preparing workspace...</span>
+            </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="w-full bg-gray-800/50 rounded-full h-1.5 overflow-hidden border border-gray-700/30">
+            <div id="progress-bar" class="bg-gradient-to-r from-indigo-600 to-purple-600 h-full rounded-full transition-all duration-700 ease-in-out" style="width: 5%"></div>
+        </div>
+
+        <p id="status-text" class="text-gray-500 text-xs mt-3">Initializing agents...</p>
+    </div>
+
+<script>
+    const simId = "{{ simulation_id }}";
+    const progressBar = document.getElementById('progress-bar');
+    const statusText  = document.getElementById('status-text');
+
+    const steps = [
+        document.getElementById('step1'),
+        document.getElementById('step2'),
+        document.getElementById('step3'),
+        document.getElementById('step4'),
+    ];
+
+    let currentStep  = 0;
+    let pollCount    = 0;
+    const maxPolls   = 40; // 40 × 3s = 2 min max
+
+    // Advance visual steps every ~5 seconds regardless of actual progress
+    const stepInterval = setInterval(() => {
+        if (currentStep < steps.length - 1) {
+            steps[currentStep].classList.remove('active');
+            steps[currentStep].classList.add('done');
+            steps[currentStep].querySelector('.dot').innerHTML = '✓';
+            currentStep++;
+            steps[currentStep].classList.add('active');
+        }
+    }, 5000);
+
+    // Animate progress bar slowly while waiting
+    let fakeProgress = 5;
+    const progressInterval = setInterval(() => {
+        if (fakeProgress < 85) {
+            fakeProgress += Math.random() * 4;
+            progressBar.style.width = Math.min(fakeProgress, 85) + '%';
+        }
+    }, 1500);
+
+    async function pollReady() {
+        try {
+            const response = await fetch(`/simulation/check-ready/${simId}/`);
+            const data     = await response.json();
+
+            if (data.status === 'ready') {
+                // All done
+                clearInterval(stepInterval);
+                clearInterval(progressInterval);
+
+                steps.forEach(s => { s.classList.remove('active'); s.classList.add('done'); });
+                progressBar.style.width = '100%';
+                statusText.innerText    = 'Simulation ready! Entering workspace...';
+
+                setTimeout(() => {
+                    window.location.href = `/simulation/chat/${simId}/`;
+                }, 800);
+
+            } else if (data.status === 'error') {
+                clearInterval(stepInterval);
+                clearInterval(progressInterval);
+                statusText.innerText = 'Something went wrong. Redirecting to dashboard...';
+                setTimeout(() => { window.location.href = '/dashboard/'; }, 3000);
+
+            } else {
+                // Still processing — poll again
+                pollCount++;
+                if (pollCount >= maxPolls) {
+                    statusText.innerText = 'Taking longer than expected. Please check your dashboard.';
+                    setTimeout(() => { window.location.href = '/dashboard/'; }, 4000);
+                } else {
+                    setTimeout(pollReady, 3000);
+                }
+            }
+        } catch (error) {
+            pollCount++;
+            if (pollCount < maxPolls) {
+                setTimeout(pollReady, 3000);
+            } else {
+                window.location.href = '/dashboard/';
+            }
+        }
+    }
+
+    // Start polling after 2 seconds (give the thread time to kick off)
+    setTimeout(pollReady, 2000);
+</script>
+</body>
+</html>

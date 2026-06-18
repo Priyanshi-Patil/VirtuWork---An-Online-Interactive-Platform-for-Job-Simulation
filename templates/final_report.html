@@ -1,0 +1,679 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Career Readiness Report - VirtuWork</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --cyan: #00f5ff;
+            --green: #00ff88;
+            --purple: #8b5cf6;
+            --pink: #ff006e;
+            --bg: #020812;
+            --surface: rgba(0, 245, 255, 0.03);
+            --border: rgba(0, 245, 255, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg);
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Grid Background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridPan 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes gridPan {
+            0% { background-position: 0 0; }
+            100% { background-position: 60px 60px; }
+        }
+
+        /* Glowing Orbs */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+            animation: orbFloat 8s ease-in-out infinite;
+        }
+        .orb1 { width: 500px; height: 500px; background: rgba(0,245,255,0.06); top: -150px; left: -100px; }
+        .orb2 { width: 400px; height: 400px; background: rgba(139,92,246,0.08); bottom: -100px; right: -80px; animation-delay: -4s; }
+        .orb3 { width: 300px; height: 300px; background: rgba(0,255,136,0.05); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -2s; }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.05); }
+        }
+
+        /* Scanline Effect */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,0,0,0.08) 2px,
+                rgba(0,0,0,0.08) 4px
+            );
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 3rem;
+            animation: fadeDown 0.6s ease both;
+        }
+
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            color: var(--cyan);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan);
+            animation: blink 1.2s step-end infinite;
+        }
+
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(1.6rem, 4vw, 2.8rem);
+            font-weight: 900;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--cyan) 0%, #a78bfa 50%, var(--green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.05em;
+        }
+
+        .btn-dashboard {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--cyan);
+            padding: 0.65rem 1.4rem;
+            border-radius: 4px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .btn-dashboard::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--cyan);
+            transform: translateX(-100%);
+            transition: transform 0.2s;
+            z-index: -1;
+        }
+
+        .btn-dashboard:hover { color: #020812; border-color: var(--cyan); }
+        .btn-dashboard:hover::before { transform: translateX(0); }
+
+        /* Score Card */
+        .score-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.7s 0.1s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        }
+
+        .score-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .ring-wrap {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 1.5rem;
+        }
+
+        .ring-wrap svg {
+            transform: rotate(-90deg);
+            width: 180px;
+            height: 180px;
+        }
+
+        .ring-bg { fill: none; stroke: rgba(0,245,255,0.08); stroke-width: 10; }
+
+        .ring-fg {
+            fill: none;
+            stroke: url(#ringGrad);
+            stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 502;
+            stroke-dashoffset: 502;
+            animation: ringFill 1.8s 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
+        }
+
+        @keyframes ringFill {
+            to { stroke-dashoffset: var(--dash-offset); }
+        }
+
+        .ring-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ring-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--cyan);
+            text-shadow: 0 0 30px rgba(0,245,255,0.6);
+            line-height: 1;
+        }
+
+        .ring-pct {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: rgba(0,245,255,0.5);
+        }
+
+        .perf-tag {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--green);
+            text-shadow: 0 0 20px rgba(0,255,136,0.5);
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-cert {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            width: 100%;
+            max-width: 360px;
+            padding: 0.85rem;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+            display: block;
+        }
+
+        .btn-cert:hover { box-shadow: 0 0 30px rgba(99,102,241,0.6); }
+
+        .btn-cert::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%;
+            width: 40%; height: 200%;
+            background: rgba(255,255,255,0.15);
+            transform: skewX(-20deg);
+            transition: left 0.4s;
+        }
+
+        .btn-cert:hover::before { left: 120%; }
+
+        /* Corner accents */
+        .corner {
+            position: absolute;
+            width: 14px; height: 14px;
+            border-color: rgba(0,245,255,0.3);
+            border-style: solid;
+        }
+        .corner.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+        .corner.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
+        .corner.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; }
+        .corner.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+        /* Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+            animation: fadeUp 0.7s 0.2s ease both;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.75rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .stat-card:hover { transform: translateY(-4px); }
+
+        .stat-card.cyan:hover { border-color: var(--cyan); box-shadow: 0 0 25px rgba(0,245,255,0.1); }
+        .stat-card.purple:hover { border-color: var(--purple); box-shadow: 0 0 25px rgba(139,92,246,0.1); }
+        .stat-card.green:hover { border-color: var(--green); box-shadow: 0 0 25px rgba(0,255,136,0.1); }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+        }
+
+        .stat-card.cyan::before { background: linear-gradient(90deg, transparent, var(--cyan), transparent); }
+        .stat-card.purple::before { background: linear-gradient(90deg, transparent, var(--purple), transparent); }
+        .stat-card.green::before { background: linear-gradient(90deg, transparent, var(--green), transparent); }
+
+        .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.2rem;
+        }
+
+        .stat-card.cyan .stat-icon { background: rgba(0,245,255,0.08); color: var(--cyan); }
+        .stat-card.purple .stat-icon { background: rgba(139,92,246,0.08); color: var(--purple); }
+        .stat-card.green .stat-icon { background: rgba(0,255,136,0.08); color: var(--green); }
+
+        .stat-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            color: rgba(255,255,255,0.35);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-val {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .stat-card.cyan .stat-val { color: var(--cyan); text-shadow: 0 0 20px rgba(0,245,255,0.4); }
+        .stat-card.purple .stat-val { color: var(--purple); text-shadow: 0 0 20px rgba(139,92,246,0.4); }
+        .stat-card.green .stat-val { color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.4); }
+
+        /* Section heading */
+        .section-heading {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-heading .bar {
+            width: 3px; height: 24px;
+            background: linear-gradient(180deg, var(--cyan), var(--purple));
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--cyan);
+        }
+
+        /* Task Cards */
+        .task-list { margin-bottom: 2.5rem; display: flex; flex-direction: column; gap: 1rem; animation: fadeUp 0.7s 0.3s ease both; }
+
+        .task-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: border-color 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card:hover { border-color: rgba(0,245,255,0.3); }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--cyan), var(--purple));
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .task-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--cyan);
+        }
+
+        .task-score-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+        }
+
+        .task-feedback {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.6;
+        }
+
+        /* Summary */
+        .summary-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.06));
+            border: 1px solid rgba(139,92,246,0.2);
+            border-radius: 12px;
+            padding: 2rem 2rem 2rem 3.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.7s 0.4s ease both;
+        }
+
+        .summary-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--purple), transparent);
+        }
+
+        .summary-box h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .summary-box p {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .quote-mark {
+            font-family: 'Orbitron', monospace;
+            font-size: 5rem;
+            color: rgba(139,92,246,0.2);
+            line-height: 1;
+            position: absolute;
+            top: 1rem; left: 1rem;
+        }
+
+        /* Strengths/Weaknesses */
+        .sw-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            animation: fadeUp 0.7s 0.5s ease both;
+        }
+
+        @media (max-width: 640px) { .sw-grid { grid-template-columns: 1fr; } }
+
+        .sw-card {
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid;
+        }
+
+        .sw-card.strengths { background: rgba(0,255,136,0.03); border-color: rgba(0,255,136,0.15); }
+        .sw-card.weaknesses { background: rgba(255,0,110,0.03); border-color: rgba(255,0,110,0.15); }
+
+        .sw-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1.25rem;
+        }
+
+        .sw-card.strengths .sw-title { color: var(--green); }
+        .sw-card.weaknesses .sw-title { color: #ff6b9d; }
+
+        .sw-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .sw-item .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .sw-card.strengths .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+        .sw-card.weaknesses .dot { background: #ff6b9d; box-shadow: 0 0 6px #ff6b9d; }
+    </style>
+</head>
+
+<body>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    
+    <div class="wrapper">
+
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <div class="badge">SIMULATION COMPLETE</div>
+                <h1>Final Report of {{ sim.role_title }}</h1>
+                <p class="subtitle">// Analysis for {{ sim.role_title }}: {{ sim.project_title }}</p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn-dashboard">
+                <i class="fas fa-arrow-left"></i> DASHBOARD
+            </a>
+        </div>
+
+        <!-- Score Ring Card -->
+        <div class="score-card">
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+
+            <div class="score-label">// OVERALL_SCORE.exe</div>
+
+            <div class="ring-wrap">
+                <svg viewBox="0 0 180 180">
+                    <defs>
+                        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#00f5ff"/>
+                            <stop offset="50%" stop-color="#8b5cf6"/>
+                            <stop offset="100%" stop-color="#00ff88"/>
+                        </linearGradient>
+                    </defs>
+                    <circle class="ring-bg" cx="90" cy="90" r="80"/>
+                    <circle class="ring-fg" cx="90" cy="90" r="80"
+                        style="--dash-offset: calc(502 - (502 * {{ overall_score }} / 100));"/>
+                </svg>
+                <div class="ring-center">
+                    <span class="ring-number">{{ overall_score }}</span>
+                    <span class="ring-pct">/ 100</span>
+                </div>
+            </div>
+
+            <div class="perf-tag">▶ EXCELLENT PERFORMANCE</div>
+
+            <a href="{% url 'certificate' sim.id %}" class="btn-cert">
+                <i class="fas fa-certificate" style="margin-right:8px;"></i> VIEW CERTIFICATE
+            </a>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+            <div class="stat-card cyan">
+                <div class="stat-icon"><i class="fas fa-comments"></i></div>
+                <div class="stat-name">Communication</div>
+                <div class="stat-val">{{ report.communication_score }}<span style="font-size:1rem;">%</span></div>
+            </div>
+            <div class="stat-card purple">
+                <div class="stat-icon"><i class="fas fa-code"></i></div>
+                <div class="stat-name">Technical Skill</div>
+                <div class="stat-val">{{ report.technical_score }}<span style="font-size:1rem;">%</span></div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-icon"><i class="fas fa-brain"></i></div>
+                <div class="stat-name">Problem Solving</div>
+                <div class="stat-val">{{ report.problem_solving_score }}<span style="font-size:1rem;">%</span></div>
+            </div>
+        </div>
+
+        <!-- Task Analysis -->
+        <div class="section-heading"><div class="bar"></div> DETAILED TASK ANALYSIS</div>
+        <div class="task-list">
+            {% for task in report.task_breakdown %}
+            <div class="task-card">
+                <div class="task-header">
+                    <div class="task-title">{{ task.title }}</div>
+                    <span class="task-score-badge
+                        {% if task.status == 'Information Only' %}" style="background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);"
+                        {% elif task.score < 50 %}" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.25);"
+                        {% else %}" style="background:rgba(0,255,136,0.1);color:#00ff88;border:1px solid rgba(0,255,136,0.25);"
+                        {% endif %}>SCORE: {{ task.score }}</span>
+                </div>
+                <div class="task-feedback">{{ task.feedback }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- AI Summary -->
+        <div class="summary-box">
+            <span class="quote-mark">"</span>
+            <h3>AI EXECUTIVE SUMMARY</h3>
+            <p>"{{ report.summary }}"</p>
+        </div>
+
+        <!-- Strengths & Growth -->
+        <div class="sw-grid">
+            <div class="sw-card strengths">
+                <div class="sw-title"><i class="fas fa-plus-circle"></i> KEY STRENGTHS</div>
+                {% for strength in report.strengths %}
+                <div class="sw-item"><div class="dot"></div><span>{{ strength }}</span></div>
+                {% endfor %}
+            </div>
+            <div class="sw-card weaknesses">
+                <div class="sw-title"><i class="fas fa-exclamation-triangle"></i> GROWTH AREAS</div>
+                {% for weakness in report.weaknesses %}
+                <div class="sw-item"><div class="dot"></div><span>{{ weakness }}</span></div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
